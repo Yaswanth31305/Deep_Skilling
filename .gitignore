@@ -1,0 +1,47 @@
+## Ignore Visual Studio temporary files, build results, and user settings
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Mono auto generated files
+*.pidb
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Re]leases/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Log]s/
+[Ff]ormats/
+
+# Visual Studio 2015/2017/2019/2022 cache directory
+.vs/
+
+# MSTest test Results
+[T]est[R]esults/
+[Bb]uild[L]og.*
+
+# NUnit
+*.VisualState.xml
+TestResult.xml
+
+# Build preview templates
+*_wpftmp.csproj
+
+# ReSharper is a .NET coding assistant
+_ReSharper*/
+*.[Re]Sharper.user
