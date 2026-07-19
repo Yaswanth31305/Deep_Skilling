@@ -4,16 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeWebAPI.Controllers
 {
-    /// <summary>
-    /// Employee API v2 — Returns enriched employee data with computed fields.
-    /// Exercise 6: API Versioning demonstration.
-    /// </summary>
+
     [ApiController]
     [ApiVersion("2.0")]
     [Route("api/v{version:apiVersion}/employee")]
     public class EmployeeV2Controller : ControllerBase
     {
-        // Shared in-memory store (same data as v1 for demonstration purposes)
         private static readonly List<Employee> employees = new()
         {
             new Employee
@@ -53,9 +49,7 @@ namespace EmployeeWebAPI.Controllers
             }
         };
 
-        /// <summary>
-        /// GET all employees — enriched with SalaryBand and SkillCount.
-        /// </summary>
+
         [HttpGet]
         public IActionResult GetEmployees()
         {
@@ -74,9 +68,7 @@ namespace EmployeeWebAPI.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// GET a single employee by ID — enriched with SalaryBand and SkillCount.
-        /// </summary>
+
         [HttpGet("{id}")]
         public IActionResult GetEmployee(int id)
         {
@@ -103,7 +95,7 @@ namespace EmployeeWebAPI.Controllers
             return Ok(result);
         }
 
-        // ── Helper ───────────────────────────────────────────────────────────
+
 
         private static string GetSalaryBand(decimal salary) => salary switch
         {

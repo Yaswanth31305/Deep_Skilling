@@ -7,7 +7,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Exercise 3: Action Filters + Exercise 6: XML Content Negotiation
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<CustomExceptionFilter>();
@@ -15,7 +14,6 @@ builder.Services.AddControllers(options =>
 })
 .AddXmlSerializerFormatters();
 
-// Exercise 6: API Versioning
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -29,7 +27,6 @@ builder.Services.AddApiVersioning(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
-// Exercise 4: JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -49,7 +46,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 
-// Exercise 6: Swagger with version docs
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "Employee Web API", Version = "v1" });

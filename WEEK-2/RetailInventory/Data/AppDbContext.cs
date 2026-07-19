@@ -17,10 +17,8 @@ namespace RetailInventory.Data
                 "Server=(localdb)\\MSSQLLocalDB;Database=RetailInventoryDB;Trusted_Connection=True;TrustServerCertificate=True;");
         }
 
-        // Lab 4: Inserting Initial Data using EF Core seed
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Fix decimal precision warning for Price column
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
                 .HasPrecision(18, 2);

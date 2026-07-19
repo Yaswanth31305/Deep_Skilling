@@ -14,20 +14,14 @@ namespace RetailInventoryAPI.Data
 
         public DbSet<Category> Categories { get; set; }
 
-        /// <summary>
-        /// Seeds default categories and products so the database is immediately
-        /// queryable after running migrations. (Exercise 5 — EF Core Seed Data)
-        /// </summary>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure decimal precision to avoid silent truncation
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
                 .HasPrecision(18, 2);
 
-            // Seed Categories
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Electronics" },
                 new Category { Id = 2, Name = "Clothing" },
@@ -35,7 +29,6 @@ namespace RetailInventoryAPI.Data
                 new Category { Id = 4, Name = "Sports & Fitness" }
             );
 
-            // Seed Products
             modelBuilder.Entity<Product>().HasData(
                 new Product { Id = 1, Name = "Laptop",          Price = 75000m,  CategoryId = 1 },
                 new Product { Id = 2, Name = "Wireless Mouse",  Price = 1299m,   CategoryId = 1 },
