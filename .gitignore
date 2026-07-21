@@ -1,0 +1,15 @@
+## Build & IDE cache
+bin/
+obj/
+.vs/
+*/.vs/
+**/.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Shortcuts & Temp
+*.lnk
+Thumbs.db
+.DS_Store
