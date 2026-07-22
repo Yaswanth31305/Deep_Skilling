@@ -1,5 +1,4 @@
-// Root App Component
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Header } from './components/header/header';
 
@@ -11,10 +10,8 @@ import { Header } from './components/header/header';
   styleUrl: './app.css'
 })
 export class App {
-  // HO2: @Input property to pass to Header
   portalTitle = 'Student Course Portal';
 
-  // HO2: Handler for @Output event from Header
   onNavChange(route: string): void {
     console.log('[App] Navigation changed to:', route);
   }

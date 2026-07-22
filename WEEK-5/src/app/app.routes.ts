@@ -1,4 +1,3 @@
-// HO7 — Routing Configuration with Route Guards
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 
@@ -16,7 +15,7 @@ export const routes: Routes = [
   {
     path: 'profile',
     loadComponent: () => import('./pages/student-profile/student-profile').then(m => m.StudentProfile),
-    canActivate: [authGuard],   // HO7: Route Guard
+    canActivate: [authGuard],
     title: 'My Profile | Student Course Portal'
   },
   {
@@ -27,7 +26,7 @@ export const routes: Routes = [
   {
     path: 'course-register',
     loadComponent: () => import('./pages/course-register/course-register').then(m => m.CourseRegister),
-    canActivate: [authGuard],   // HO7: Route Guard
+    canActivate: [authGuard],
     title: 'Course Registration | Student Course Portal'
   },
   {
