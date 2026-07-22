@@ -1,0 +1,153 @@
+<div class="home-page fade-in">
+
+  <div class="welcome-banner glass-card">
+    <div class="welcome-left">
+
+      <div class="greeting-badge">{{ greeting() }} 👋</div>
+      <h1 class="welcome-title">
+        Welcome back, <span class="highlight">{{ (authService.currentUser()?.name || '').split(' ')[0] }}</span>!
+      </h1>
+      <p class="welcome-sub">
+
+        Today is {{ currentDate | date:'EEEE, MMMM d, y' }}. Let's keep learning!
+      </p>
+
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-input"
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Search students or courses..."
+          id="dashboard-search"
+          aria-label="Search students or courses" />
+
+        <span class="search-count" *ngIf="searchTerm()">
+          Searching: "{{ searchTerm() }}"
+        </span>
+      </div>
+    </div>
+
+    <div class="welcome-right">
+      <div class="profile-circle">
+        <span>{{ authService.currentUser()?.name?.charAt(0) }}</span>
+      </div>
+      <div class="profile-info">
+
+        <span class="dept-badge">{{ authService.currentUser()?.department | uppercase }}</span>
+        <p>Year {{ authService.currentUser()?.year }} Student</p>
+        <p class="gpa-display">GPA: <strong>{{ authService.currentUser()?.gpa }}</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-icon">👥</span>
+
+      <div class="stat-value">{{ (students$ | async)?.length || 0 }}</div>
+      <div class="stat-label">Total Students</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">📚</span>
+      <div class="stat-value">{{ totalCourses$ | async }}</div>
+      <div class="stat-label">Total Courses</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">✅</span>
+      <div class="stat-value">{{ enrolledCount$ | async }}</div>
+      <div class="stat-label">Enrolled</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">⭐</span>
+      <div class="stat-value">{{ authService.currentUser()?.gpa }}</div>
+      <div class="stat-label">Your GPA</div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+
+    <div class="panel">
+      <h2 class="section-title">📖 Your Enrolled Courses</h2>
+
+      <div class="spinner-wrap" *ngIf="loading$ | async">
+        <div class="spinner"></div>
+      </div>
+
+      <div class="course-list" *ngIf="!(loading$ | async)">
+        <div class="course-item card"
+             *ngFor="let course of enrolledCourses$ | async; let i = index; let last = last"
+             [ngClass]="{ 'course-last': last }">
+
+          <div class="course-idx" [ngClass]="'course-idx-' + (i % 3)">{{ i + 1 }}</div>
+          <div class="course-info">
+
+            <h4>{{ course.title }}</h4>
+            <p>{{ course.instructor }}</p>
+            <div class="course-meta flex-gap">
+
+              <span class="badge"
+                    [ngStyle]="{ background: 'rgba(108,99,255,0.15)', color: '#8B84FF' }">
+                {{ course.credits }} Credits
+              </span>
+              <span class="rating">⭐ {{ course.rating }}</span>
+            </div>
+          </div>
+          <a [routerLink]="'/courses'" class="btn btn-secondary btn-sm">View</a>
+        </div>
+
+        <div class="empty-state" *ngIf="(enrolledCourses$ | async)?.length === 0">
+          <span class="empty-icon">📭</span>
+          <p>No courses enrolled yet.</p>
+          <a routerLink="/courses" class="btn btn-primary" style="margin-top:1rem">Browse Courses</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2 class="section-title">👥 All Students</h2>
+
+      <div class="student-list">
+        <div class="student-item card"
+             *ngFor="let student of students$ | async"
+             [ngClass]="getGpaColor(student.gpa)">
+          <div class="student-avatar">{{ student.name.charAt(0) }}</div>
+          <div class="student-info">
+            <h4>{{ student.name }}</h4>
+
+            <p [ngStyle]="{ color: student.gpa >= 9 ? '#00D4AA' : '#9BA3C8' }">
+              GPA: {{ student.gpa }} • {{ student.department }}
+            </p>
+
+            <span class="badge badge-primary">Year {{ student.year }}</span>
+          </div>
+          <div class="enrolled-count">
+            <span>{{ student.enrolledCourses.length }}</span>
+            <small>courses</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-links">
+    <h2 class="section-title">⚡ Quick Actions</h2>
+    <div class="grid-3">
+      <a routerLink="/courses" class="quick-card card">
+        <span class="quick-icon">📚</span>
+        <h4>Browse Courses</h4>
+        <p>Explore available courses</p>
+      </a>
+      <a routerLink="/course-register" class="quick-card card">
+        <span class="quick-icon">📝</span>
+        <h4>Course Registration</h4>
+        <p>Register for new courses</p>
+      </a>
+      <a routerLink="/profile" class="quick-card card">
+        <span class="quick-icon">👤</span>
+        <h4>My Profile</h4>
+        <p>View &amp; edit your profile</p>
+      </a>
+    </div>
+  </div>
+</div>

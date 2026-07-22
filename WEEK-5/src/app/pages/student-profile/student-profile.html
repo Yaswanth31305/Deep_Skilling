@@ -1,0 +1,152 @@
+<div class="profile-page fade-in">
+
+  <div class="profile-header glass-card" *ngIf="authService.currentUser() as user">
+    <div class="avatar-section">
+      <div class="avatar-ring">
+        <div class="avatar-circle">{{ user.name.charAt(0) }}</div>
+      </div>
+      <div class="online-dot"></div>
+    </div>
+
+    <div class="profile-info">
+
+      <h1>{{ user.name }}</h1>
+      <p class="profile-email">✉️ {{ user.email }}</p>
+      <p class="profile-meta">📱 {{ user.phone }}</p>
+
+      <div class="profile-tags">
+        <span class="badge badge-primary">🎓 Year {{ user.year }}</span>
+        <span class="badge badge-web">💻 {{ user.department }}</span>
+
+        <span class="badge"
+              [ngClass]="user.gpa >= 9 ? 'badge-success' : user.gpa >= 7 ? 'badge-primary' : 'badge-warning'">
+          📊 GPA: {{ user.gpa }}
+        </span>
+      </div>
+
+      <p class="joined-date">📅 Member since {{ user.joinedDate | date:'MMMM y' }}</p>
+    </div>
+
+    <div class="profile-actions">
+      <button class="btn btn-secondary" (click)="toggleEdit()" id="edit-profile-btn">
+        {{ editMode() ? '❌ Cancel' : '✏️ Edit Profile' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="edit-panel card" *ngIf="editMode()">
+    <h3>Edit Profile</h3>
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input class="form-control" [value]="editName()" (input)="editName.set($any($event.target).value)"
+             id="edit-name-input" aria-label="Edit full name" />
+    </div>
+    <button class="btn btn-primary" (click)="saveProfile()" id="save-profile-btn">💾 Save Changes</button>
+  </div>
+
+  <div class="gpa-card card" *ngIf="authService.currentUser() as user">
+    <h3 class="section-title">📊 Academic Performance</h3>
+    <div class="gpa-bar-wrap">
+      <div class="gpa-bar-track">
+
+        <div class="gpa-bar-fill"
+             [ngStyle]="{ width: getProgressWidth(user.gpa), background: user.gpa >= 9 ? 'var(--secondary)' : 'var(--primary)' }">
+        </div>
+      </div>
+      <span class="gpa-label">{{ user.gpa }}/10 — Grade {{ getGpaGrade(user.gpa) }}</span>
+    </div>
+    <div class="gpa-stats grid-3">
+      <div class="mini-stat">
+        <span class="mini-val">{{ user.gpa }}</span>
+        <span class="mini-label">CGPA</span>
+      </div>
+      <div class="mini-stat">
+        <span class="mini-val">{{ user.enrolledCourses.length }}</span>
+        <span class="mini-label">Courses</span>
+      </div>
+      <div class="mini-stat">
+        <span class="mini-val">{{ getGpaGrade(user.gpa) }}</span>
+        <span class="mini-label">Grade</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs-bar">
+    <button class="tab-btn" [ngClass]="{ active: activeTab() === 'overview' }"
+            (click)="setTab('overview')" id="tab-overview">Overview</button>
+    <button class="tab-btn" [ngClass]="{ active: activeTab() === 'courses' }"
+            (click)="setTab('courses')" id="tab-courses">Enrolled Courses</button>
+    <button class="tab-btn" [ngClass]="{ active: activeTab() === 'classmates' }"
+            (click)="setTab('classmates')" id="tab-classmates">Classmates</button>
+  </div>
+
+  <div class="tab-content">
+
+    <div *ngIf="activeTab() === 'overview'" class="overview-tab fade-in">
+      <div class="info-grid" *ngIf="authService.currentUser() as user">
+        <div class="info-row card">
+          <span class="info-icon">👤</span>
+          <div><label>Full Name</label><p>{{ user.name }}</p></div>
+        </div>
+        <div class="info-row card">
+          <span class="info-icon">✉️</span>
+          <div><label>Email</label><p>{{ user.email }}</p></div>
+        </div>
+        <div class="info-row card">
+          <span class="info-icon">🏫</span>
+          <div><label>Department</label><p>{{ user.department }}</p></div>
+        </div>
+        <div class="info-row card">
+          <span class="info-icon">📅</span>
+          <div><label>Joined</label><p>{{ user.joinedDate | date:'mediumDate' }}</p></div>
+        </div>
+        <div class="info-row card">
+          <span class="info-icon">📱</span>
+          <div><label>Phone</label><p>{{ user.phone }}</p></div>
+        </div>
+        <div class="info-row card">
+          <span class="info-icon">🎓</span>
+          <div><label>Year</label><p>Year {{ user.year }}</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab() === 'courses'" class="courses-tab fade-in">
+      <div class="enrolled-list">
+        <div class="enrolled-card card"
+             *ngFor="let course of enrolledCourses$ | async">
+          <div class="enrolled-icon">📘</div>
+          <div class="enrolled-info">
+            <h4>{{ course.title }}</h4>
+            <p>{{ course.instructor }}</p>
+            <div class="flex-gap">
+              <span class="badge badge-primary">{{ course.credits }} Credits</span>
+              <span class="rating">⭐ {{ course.rating }}</span>
+            </div>
+          </div>
+          <div class="enrolled-duration">{{ course.duration }}</div>
+        </div>
+
+        <div class="empty-state" *ngIf="(enrolledCourses$ | async)?.length === 0">
+          <span class="empty-icon">📭</span>
+          <p>No courses enrolled yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab() === 'classmates'" class="classmates-tab fade-in">
+      <div class="classmates-grid">
+        <div class="classmate-card card"
+             *ngFor="let student of allStudents$ | async">
+          <div class="classmate-avatar">{{ student.name.charAt(0) }}</div>
+          <h4>{{ student.name }}</h4>
+          <p>{{ student.department }}</p>
+          <span class="badge badge-primary">Year {{ student.year }}</span>
+          <div class="gpa-chip" [ngClass]="student.gpa >= 9 ? 'gpa-top' : 'gpa-avg'">
+            GPA {{ student.gpa }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

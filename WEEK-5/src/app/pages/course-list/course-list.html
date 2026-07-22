@@ -1,0 +1,105 @@
+<div class="courses-page fade-in">
+  <div class="page-header">
+    <h1>📚 Course Catalog</h1>
+    <p>Browse, search, and enroll in courses that match your goals</p>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-chip">
+      <span>📖</span>
+      <span>{{ totalCourses$ | async }} Total</span>
+    </div>
+    <div class="stat-chip enrolled">
+      <span>✅</span>
+      <span>{{ enrolledCount$ | async }} Enrolled</span>
+    </div>
+  </div>
+
+  <div class="filters-bar card">
+    <div class="search-wrap">
+      <span>🔍</span>
+
+      <input
+        class="search-input"
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearch()"
+        placeholder="Search by course name or instructor..."
+        id="course-search"
+        aria-label="Search courses" />
+    </div>
+
+    <div class="category-pills">
+      <button
+        *ngFor="let cat of categories"
+        class="pill-btn"
+        [ngClass]="{ 'active': selectedCategory === cat }"
+        (click)="onCategoryChange(cat)"
+        [attr.id]="'cat-' + cat.replace(' ', '-').toLowerCase()">
+        {{ cat }}
+      </button>
+    </div>
+  </div>
+
+  <div class="spinner-wrap" *ngIf="loading$ | async">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="courses-grid" *ngIf="!(loading$ | async)">
+
+    <div class="course-card card"
+         *ngFor="let course of courses$ | async; trackBy: trackByCourse"
+         [ngClass]="{ 'enrolled-card': course.enrolled }">
+
+      <div class="card-top flex-between">
+
+        <span class="badge" [ngClass]="getCategoryClass(course.category)">
+          {{ course.category }}
+        </span>
+
+        <span class="level-badge" [ngClass]="getLevelClass(course.level)">
+          {{ course.level }}
+        </span>
+      </div>
+
+      <h3 class="course-title">{{ course.title }}</h3>
+
+      <p class="course-desc">{{ course.description | truncate:100 }}</p>
+
+      <div class="course-meta">
+        <span class="rating">
+          <span [ngStyle]="{ color: course.rating >= 4.8 ? '#FFD700' : '#FFB347' }">★</span>
+          {{ course.rating }}
+        </span>
+        <span class="meta-chip">👨‍🏫 {{ course.instructor }}</span>
+        <span class="meta-chip">📅 {{ course.duration }}</span>
+        <span class="meta-chip">👥 {{ course.students }}</span>
+      </div>
+
+      <div class="card-footer flex-between">
+        <div class="credits-badge">
+
+          <span>{{ course.credits }} CREDITS</span>
+        </div>
+
+        <span class="enrolled-tag" *ngIf="course.enrolled">✅ Enrolled</span>
+
+        <button
+          class="btn"
+          [ngClass]="course.enrolled ? 'btn-danger' : 'btn-success'"
+          (click)="toggleEnroll(course)"
+          [id]="'enroll-btn-' + course.id">
+          {{ course.enrolled ? 'Drop Course' : 'Enroll Now' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="(courses$ | async)?.length === 0">
+      <span class="empty-icon">🔎</span>
+      <p>No courses match your search.</p>
+      <button class="btn btn-secondary" (click)="onCategoryChange('All')" style="margin-top:1rem">
+        Clear Filters
+      </button>
+    </div>
+  </div>
+</div>
