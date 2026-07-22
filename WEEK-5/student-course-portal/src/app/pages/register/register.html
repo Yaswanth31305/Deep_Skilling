@@ -1,0 +1,202 @@
+<!-- HO4 — Template-Driven Form: FormsModule, ngModel, Validation, Error Messages -->
+<div class="register-page fade-in">
+  <div class="register-container glass-card">
+    <div class="register-header">
+      <div class="header-icon">🎓</div>
+      <h1>Create Account</h1>
+      <p>Join the Student Course Portal to begin your learning journey</p>
+    </div>
+
+    <!-- Success Alert — HO3: *ngIf -->
+    <div class="alert alert-success" *ngIf="success()">
+      ✅ Registration successful! Redirecting to dashboard...
+    </div>
+
+    <!-- Error Alert -->
+    <div class="alert alert-error" *ngIf="errorMessage()">
+      ⚠️ {{ errorMessage() }}
+    </div>
+
+    <!-- HO4: Template-Driven Form with #form="ngForm" -->
+    <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" novalidate id="register-form">
+
+      <!-- Full Name -->
+      <div class="form-group">
+        <label class="form-label" for="name">Full Name *</label>
+        <input
+          id="name"
+          name="name"
+          class="form-control"
+          type="text"
+          placeholder="Enter your full name"
+          [(ngModel)]="formData.name"
+          #name="ngModel"
+          required
+          minlength="3"
+          [ngClass]="{ 'ng-invalid ng-touched': submitted() && name.invalid }" />
+        <!-- HO4: Error messages with *ngIf -->
+        <div class="error-msg" *ngIf="(name.touched || submitted()) && name.errors?.['required']">
+          ⚠️ Full name is required
+        </div>
+        <div class="error-msg" *ngIf="(name.touched || submitted()) && name.errors?.['minlength']">
+          ⚠️ Name must be at least 3 characters
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label class="form-label" for="email">Email Address *</label>
+        <input
+          id="email"
+          name="email"
+          class="form-control"
+          type="email"
+          placeholder="student@college.edu"
+          [(ngModel)]="formData.email"
+          #email="ngModel"
+          required
+          email
+          [ngClass]="{ 'ng-invalid ng-touched': submitted() && email.invalid }" />
+        <div class="error-msg" *ngIf="(email.touched || submitted()) && email.errors?.['required']">
+          ⚠️ Email is required
+        </div>
+        <div class="error-msg" *ngIf="(email.touched || submitted()) && email.errors?.['email']">
+          ⚠️ Please enter a valid email address
+        </div>
+      </div>
+
+      <!-- Row: Department + Year -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="department">Department *</label>
+          <select
+            id="department"
+            name="department"
+            class="form-control"
+            [(ngModel)]="formData.department"
+            #department="ngModel"
+            required
+            [ngClass]="{ 'ng-invalid ng-touched': submitted() && department.invalid }">
+            <option value="" disabled>Select department...</option>
+            <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+          </select>
+          <div class="error-msg" *ngIf="(department.touched || submitted()) && department.errors?.['required']">
+            ⚠️ Please select a department
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="year">Year of Study *</label>
+          <select
+            id="year"
+            name="year"
+            class="form-control"
+            [(ngModel)]="formData.year"
+            #year="ngModel"
+            required>
+            <option [value]="1">Year 1 (Freshman)</option>
+            <option [value]="2">Year 2 (Sophomore)</option>
+            <option [value]="3">Year 3 (Junior)</option>
+            <option [value]="4">Year 4 (Senior)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="form-group">
+        <label class="form-label" for="phone">Phone Number *</label>
+        <input
+          id="phone"
+          name="phone"
+          class="form-control"
+          type="tel"
+          placeholder="+91-9876543210"
+          [(ngModel)]="formData.phone"
+          #phone="ngModel"
+          required
+          pattern="^[+]?[0-9\-]{10,15}$"
+          [ngClass]="{ 'ng-invalid ng-touched': submitted() && phone.invalid }" />
+        <div class="error-msg" *ngIf="(phone.touched || submitted()) && phone.errors?.['required']">
+          ⚠️ Phone number is required
+        </div>
+        <div class="error-msg" *ngIf="(phone.touched || submitted()) && phone.errors?.['pattern']">
+          ⚠️ Please enter a valid phone number
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label class="form-label" for="password">Password *</label>
+        <div class="password-wrap">
+          <input
+            id="password"
+            name="password"
+            class="form-control"
+            [type]="showPassword() ? 'text' : 'password'"
+            placeholder="Minimum 8 characters"
+            [(ngModel)]="formData.password"
+            #password="ngModel"
+            required
+            minlength="8"
+            [ngClass]="{ 'ng-invalid ng-touched': submitted() && password.invalid }" />
+          <button type="button" class="toggle-pass" (click)="togglePasswordVisibility()"
+                  id="toggle-password-btn">
+            {{ showPassword() ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        <div class="error-msg" *ngIf="(password.touched || submitted()) && password.errors?.['required']">
+          ⚠️ Password is required
+        </div>
+        <div class="error-msg" *ngIf="(password.touched || submitted()) && password.errors?.['minlength']">
+          ⚠️ Password must be at least 8 characters
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <label class="form-label" for="confirmPassword">Confirm Password *</label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          class="form-control"
+          [type]="showPassword() ? 'text' : 'password'"
+          placeholder="Re-enter your password"
+          [(ngModel)]="formData.confirmPassword"
+          #confirmPassword="ngModel"
+          required />
+        <div class="error-msg" *ngIf="(confirmPassword.touched || submitted()) && confirmPassword.errors?.['required']">
+          ⚠️ Please confirm your password
+        </div>
+      </div>
+
+      <!-- Submit + Reset -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary btn-lg"
+          id="register-submit-btn"
+          [disabled]="success()">
+          🚀 Create Account
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="resetForm(registerForm)"
+          id="register-reset-btn">
+          Reset
+        </button>
+      </div>
+
+      <!-- Form status display (HO4 learning aid) -->
+      <div class="form-status" *ngIf="submitted()">
+        <span [ngClass]="registerForm.valid ? 'status-valid' : 'status-invalid'">
+          Form Status: {{ registerForm.valid ? '✅ Valid' : '❌ Invalid (' + registerForm.errors + ')' }}
+        </span>
+      </div>
+    </form>
+
+    <div class="login-link">
+      Already a member? <a routerLink="/" id="login-link">Go to Dashboard →</a>
+    </div>
+  </div>
+</div>

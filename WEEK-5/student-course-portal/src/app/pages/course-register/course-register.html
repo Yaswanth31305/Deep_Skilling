@@ -1,0 +1,166 @@
+<!-- HO5 — Reactive Form: FormGroup, FormControl, FormArray, Validators, Dynamic Controls -->
+<div class="course-reg-page fade-in">
+  <div class="reg-container glass-card">
+
+    <div class="reg-header">
+      <div class="header-icon">📝</div>
+      <h1>Course Registration</h1>
+      <p>Register for courses using reactive forms with dynamic controls and validators</p>
+    </div>
+
+    <!-- Success Alert -->
+    <div class="alert alert-success" *ngIf="success">
+      ✅ Course registration submitted successfully! Redirecting to courses...
+    </div>
+
+    <!-- Error Alert -->
+    <div class="alert alert-error" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
+
+    <!-- HO5: Reactive Form — [formGroup]="form" -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate id="course-register-form">
+
+      <!-- Student ID (readonly) -->
+      <div class="form-group">
+        <label class="form-label">Student ID</label>
+        <input class="form-control" formControlName="studentId" type="text" readonly
+               id="student-id-field" />
+      </div>
+
+      <!-- Start Date -->
+      <div class="form-group">
+        <label class="form-label" for="startDate">Preferred Start Date *</label>
+        <input
+          id="startDate"
+          class="form-control"
+          type="date"
+          formControlName="startDate"
+          [ngClass]="{ 'ng-invalid ng-touched': isInvalid('startDate') }" />
+        <div class="error-msg" *ngIf="isInvalid('startDate')">
+          ⚠️ Start date is required
+        </div>
+      </div>
+
+      <!-- Reason -->
+      <div class="form-group">
+        <label class="form-label" for="reason">Reason for Registration *</label>
+        <textarea
+          id="reason"
+          class="form-control"
+          formControlName="reason"
+          rows="3"
+          placeholder="Explain why you want to take these courses (min 20 characters)..."
+          [ngClass]="{ 'ng-invalid ng-touched': isInvalid('reason') }"></textarea>
+        <div class="char-count">
+          {{ getControl('reason').value?.length || 0 }} / 300
+        </div>
+        <div class="error-msg" *ngIf="isInvalid('reason') && getControl('reason').errors?.['required']">
+          ⚠️ Reason is required
+        </div>
+        <div class="error-msg" *ngIf="isInvalid('reason') && getControl('reason').errors?.['minlength']">
+          ⚠️ Reason must be at least 20 characters
+        </div>
+        <div class="error-msg" *ngIf="isInvalid('reason') && getControl('reason').errors?.['maxlength']">
+          ⚠️ Reason cannot exceed 300 characters
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="divider"></div>
+
+      <!-- HO5: FormArray — Dynamic Course Preferences -->
+      <div class="prefs-section">
+        <div class="prefs-header flex-between">
+          <h3>📚 Course Preferences</h3>
+          <button type="button" class="btn btn-secondary btn-sm"
+                  (click)="addCoursePreference()"
+                  [disabled]="coursePreferences.length >= 5"
+                  id="add-preference-btn">
+            ＋ Add Course
+          </button>
+        </div>
+
+        <!-- Duplicate error -->
+        <div class="alert alert-error" *ngIf="submitted && coursePreferences.errors?.['duplicateCourses']">
+          ⚠️ You cannot select the same course twice.
+        </div>
+
+        <!-- HO5: *ngFor over FormArray -->
+        <div class="pref-item card"
+             *ngFor="let pref of coursePreferences.controls; let i = index"
+             [formGroupName]="i">
+
+          <div class="pref-index">{{ i + 1 }}</div>
+
+          <div class="pref-fields">
+            <!-- Course Select -->
+            <div class="form-group">
+              <label class="form-label">Course *</label>
+              <select
+                class="form-control"
+                formControlName="courseId"
+                [ngClass]="{ 'ng-invalid ng-touched': isPrefInvalid(i, 'courseId') }"
+                [id]="'course-select-' + i">
+                <option value="" disabled>Select a course...</option>
+                <option *ngFor="let course of availableCourses" [value]="course.id">
+                  {{ course.title }} ({{ course.credits }} Credits)
+                </option>
+              </select>
+              <div class="error-msg" *ngIf="isPrefInvalid(i, 'courseId')">
+                ⚠️ Please select a course
+              </div>
+            </div>
+
+            <!-- Priority -->
+            <div class="form-group">
+              <label class="form-label">Priority *</label>
+              <select
+                class="form-control priority-sel"
+                formControlName="priority"
+                [id]="'priority-select-' + i">
+                <option *ngFor="let p of priorities" [value]="p">Priority {{ p }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Remove button -->
+          <button type="button" class="btn btn-danger btn-sm remove-btn"
+                  (click)="removeCoursePreference(i)"
+                  [disabled]="coursePreferences.length === 1"
+                  [id]="'remove-pref-' + i">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Form State Display (HO5 learning aid) -->
+      <div class="form-debug" *ngIf="submitted">
+        <div class="debug-item">
+          <span class="debug-label">Form Valid:</span>
+          <span [ngClass]="form.valid ? 'status-valid' : 'status-invalid'">
+            {{ form.valid ? '✅ Yes' : '❌ No' }}
+          </span>
+        </div>
+        <div class="debug-item">
+          <span class="debug-label">Form Dirty:</span>
+          <span>{{ form.dirty ? 'Yes' : 'No' }}</span>
+        </div>
+        <div class="debug-item">
+          <span class="debug-label">Preferences Count:</span>
+          <span>{{ coursePreferences.length }}</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg" id="submit-registration-btn"
+                [disabled]="success">
+          🚀 Submit Registration
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="reset()" id="reset-form-btn">
+          Reset
+        </button>
+        <a routerLink="/courses" class="btn btn-secondary" id="cancel-registration-link">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>

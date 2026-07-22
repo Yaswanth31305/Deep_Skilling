@@ -1,0 +1,13 @@
+<!-- Root App Template: Header + RouterOutlet -->
+<div class="app-layout">
+  <!-- HO2: Property Binding [pageTitle] + Event Binding (navChange) -->
+  <app-header
+    [pageTitle]="portalTitle"
+    (navChange)="onNavChange($event)">
+  </app-header>
+
+  <!-- HO7: RouterOutlet — renders active route component -->
+  <main class="page-content" role="main" id="main-content">
+    <router-outlet />
+  </main>
+</div>
